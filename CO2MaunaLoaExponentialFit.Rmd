@@ -1,0 +1,62 @@
+---
+title: "Exponential Fit of the CO2 Concentration in the Atmosphere"
+author: "H. Richter"
+date: "27. Oktober 2016"
+output: ioslides_presentation
+---
+
+## Slide with R Code and Output
+
+CO2 content of the atmosphere, measured on Mauna Loa, is provided here: [Mauna Loa]("ftp://aftp.cmdl.noaa.gov/products/trends/co2/co2_annmean_mlo.txt").
+
+```{r}
+
+# download data
+fileUrl <- "ftp://aftp.cmdl.noaa.gov/products/trends/co2/co2_annmean_mlo.txt"
+download.file(fileUrl, destfile="./MaunaLoa.csv") #, method="curl")
+
+# read data
+CO2 <- read.csv("./MaunaLoa.csv", header = TRUE, 
+                sep = " ", dec = ".", comment.char = "#")
+
+# clean data
+CO2 <- as.data.frame(CO2)
+CO2[, c(1:2, 4:5, 7:11)] <- NULL
+names(CO2) <- c("year", "co2")
+```
+
+## Predictive Model: Exponential Fit
+
+An exponential fit is performed on the deviation of the CO2 concentration from 280ppm.
+
+```{r}
+
+co20 <- 280
+CO2$delco2 <- CO2$co2 - co20
+
+st <- coef(nls(log(delco2) ~ log(A * exp(k * year)), 
+               CO2, 
+               start = c(A = 6E-18, k = 0.02)))
+
+mod <- nls(co2 ~ co20 + A * exp(k * year), 
+           data = CO2, 
+           start = st)
+
+CO2$delco2 <- NULL
+CO2$fit <- predict(mod, list(year = CO2$year))
+
+```
+
+## Slide with Plot
+
+The plot shows the CO2 concentration of the atmosphere in comparison with the exponential fit:
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+library(plotly)
+
+plot_ly(CO2, x = ~year) %>%
+    add_trace(y = ~co2, name = 'CO2 [ppm]', mode = 'marker') %>%
+    add_trace(y = ~fit, name = 'exp. fit', mode = 'lines')
+```
+
+
+
