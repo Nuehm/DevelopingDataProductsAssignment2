@@ -1,8 +1,7 @@
 The html file "CO2MaunaLoaExponentialFit.html" can be opened directly with a web browser here:
 
-
 https://nuehm.github.io/DevelopingDataProductsAssignment2/CO2MaunaLoaExponentialFit.html
 
 PLEASE NOTE: Mozilla Firefox crashes, Internet Explorer doesn't show anything, 
 
-but CHROME works, 
+but CHROME works!
